@@ -15,6 +15,13 @@ pub fn build(b: *std.Build) void {
     // TODO auto download from glfw and add switch for different os
     glfw_mod.addObjectFile(b.path("src/glfw/libglfw3.a"));
 
+    const gl_bindings_mod = @import("zigglgen").generateBindingsModule(b, .{
+        .api = .gl,
+        .version = .@"4.1",
+        .profile = .core,
+        // .extensions = &.{ .ARB_clip_control, .NV_scissor_exclusive },
+    });
+
     const sample_exe = b.addExecutable(.{
         .name = "sample",
         .root_source_file = b.path("src/sample.zig"),
@@ -22,6 +29,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     sample_exe.root_module.addImport("glfw", glfw_mod);
+    sample_exe.root_module.addImport("gl", gl_bindings_mod);
 
     b.installArtifact(sample_exe);
 

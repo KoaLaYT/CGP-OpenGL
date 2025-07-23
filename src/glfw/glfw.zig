@@ -48,8 +48,8 @@
 const builtin = @import("builtin");
 
 pub const VersionMajor = 3;
-pub const VersionMinor = 3;
-pub const VersionRevision = 2;
+pub const VersionMinor = 4;
+pub const VersionRevision = 0;
 
 pub const KeyState = c_int;
 
