@@ -169,6 +169,9 @@ fn compileProgram() !gl.uint {
     }
 
     const program = gl.CreateProgram();
+    if (program == 0) return error.GlCreateProgramFailed;
+    errdefer gl.DeleteProgram(program);
+
     gl.AttachShader(program, vertex_shader);
     gl.AttachShader(program, fragment_shader);
     gl.LinkProgram(program);
