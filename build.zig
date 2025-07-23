@@ -24,7 +24,8 @@ pub fn build(b: *std.Build) !void {
 
     const codes = [_][]const u8{
         "src/sample.zig",
-        "src/examples/01001_first.zig",
+        "src/examples/02001_first.zig",
+        "src/examples/02002_draw_point.zig",
     };
 
     for (codes) |code| {

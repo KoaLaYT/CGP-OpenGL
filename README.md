@@ -25,6 +25,6 @@ Also see [this example](https://github.com/castholm/zig-examples/blob/master/ope
 All files in `src/examples`, to run, do:
 
 ```bash
-zig build 01001_first -Doptimize=ReleaseSafe
+zig build 02001_first -Doptimize=ReleaseSafe
 ```
 
