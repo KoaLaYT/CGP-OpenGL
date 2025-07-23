@@ -1,6 +1,6 @@
 const std = @import("std");
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
@@ -22,26 +22,35 @@ pub fn build(b: *std.Build) void {
         // .extensions = &.{ .ARB_clip_control, .NV_scissor_exclusive },
     });
 
-    const sample_exe = b.addExecutable(.{
-        .name = "sample",
-        .root_source_file = b.path("src/sample.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-    sample_exe.root_module.addImport("glfw", glfw_mod);
-    sample_exe.root_module.addImport("gl", gl_bindings_mod);
+    const codes = [_][]const u8{
+        "src/sample.zig",
+        "src/examples/01001_first.zig",
+    };
 
-    b.installArtifact(sample_exe);
+    for (codes) |code| {
+        const name = retriveName(code);
+        const exe = b.addExecutable(.{
+            .name = name,
+            .root_source_file = b.path(code),
+            .target = target,
+            .optimize = optimize,
+        });
+        exe.root_module.addImport("glfw", glfw_mod);
+        exe.root_module.addImport("gl", gl_bindings_mod);
 
-    const sample_cmd = b.addRunArtifact(sample_exe);
-    sample_cmd.step.dependOn(b.getInstallStep());
+        b.installArtifact(exe);
 
-    if (b.args) |args| {
-        sample_cmd.addArgs(args);
+        const cmd = b.addRunArtifact(exe);
+        cmd.step.dependOn(b.getInstallStep());
+
+        if (b.args) |args| {
+            cmd.addArgs(args);
+        }
+
+        const desc = try std.fmt.allocPrint(b.allocator, "Run {s}", .{name});
+        const step = b.step(name, desc);
+        step.dependOn(&cmd.step);
     }
-
-    const sample_step = b.step("sample", "Run sample");
-    sample_step.dependOn(&sample_cmd.step);
 
     // const lib_unit_tests = b.addTest(.{
     //     .root_module = lib_mod,
@@ -56,4 +65,11 @@ pub fn build(b: *std.Build) void {
     // const test_step = b.step("test", "Run unit tests");
     // test_step.dependOn(&run_lib_unit_tests.step);
     // test_step.dependOn(&run_exe_unit_tests.step);
+}
+
+fn retriveName(full_code_path: []const u8) []const u8 {
+    var parts =
+        std.mem.splitBackwardsScalar(u8, full_code_path, '/');
+    const full_name = parts.next().?;
+    return full_name[0 .. full_name.len - 4]; // remove .zig
 }
