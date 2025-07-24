@@ -6,6 +6,8 @@ const utils = @import("utils");
 var procs: gl.ProcTable = undefined;
 var shaderProgram: gl.uint = undefined;
 var vao: [1]gl.uint = undefined;
+var x: f32 = 0.0;
+var inc: f32 = 0.01;
 
 pub fn main() !void {
     _ = glfw.setErrorCallback(utils.glfwErrorCallback);
@@ -16,7 +18,7 @@ pub fn main() !void {
     glfw.windowHint(glfw.ContextVersionMinor, 1);
     glfw.windowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile);
     glfw.windowHint(glfw.OpenGLForwardCompat, 1);
-    const window: *glfw.Window = try glfw.createWindow(600, 600, "Chapter2 - program4", null, null);
+    const window: *glfw.Window = try glfw.createWindow(600, 600, "Chapter2 - program6", null, null);
     defer glfw.destroyWindow(window);
 
     glfw.makeContextCurrent(window);
@@ -35,16 +37,26 @@ pub fn main() !void {
 }
 
 fn init(window: *glfw.Window) !void {
-    shaderProgram = try utils.createShaderProgram("glsl/02004_vs.glsl", "glsl/02004_fs.glsl");
+    shaderProgram = try utils.createShaderProgram("glsl/02006_vs.glsl", "glsl/02004_fs.glsl");
     gl.GenVertexArrays(1, &vao);
     gl.BindVertexArray(vao[0]);
     _ = window;
 }
 
 fn display(window: *glfw.Window, current_time: f64) !void {
+    gl.ClearColor(0.0, 0.0, 0.0, 1.0);
+    gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
     gl.UseProgram(shaderProgram);
-    gl.PointSize(30);
-    gl.DrawArrays(gl.POINTS, 0, 1);
+
+    x += inc;
+    if (x > 1) inc *= -1;
+    if (x < -1) inc *= -1;
+
+    const offset_loc = gl.GetUniformLocation(shaderProgram, "offset");
+    gl.ProgramUniform1f(shaderProgram, offset_loc, x);
+
+    gl.DrawArrays(gl.TRIANGLES, 0, 3);
 
     _ = window;
     _ = current_time;

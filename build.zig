@@ -22,12 +22,20 @@ pub fn build(b: *std.Build) !void {
         // .extensions = &.{ .ARB_clip_control, .NV_scissor_exclusive },
     });
 
+    const utils_mod = b.addModule("utils", .{
+        .root_source_file = b.path("src/utils/utils.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    utils_mod.addImport("gl", gl_bindings_mod);
+
     const codes = [_][]const u8{
         "src/sample.zig",
         "src/examples/02001_first.zig",
         "src/examples/02002_draw_point.zig",
         "src/examples/02004_glsl_from_file.zig",
         "src/examples/02005_draw_triangle.zig",
+        "src/examples/02006_simple_animation.zig",
     };
 
     for (codes) |code| {
@@ -40,6 +48,7 @@ pub fn build(b: *std.Build) !void {
         });
         exe.root_module.addImport("glfw", glfw_mod);
         exe.root_module.addImport("gl", gl_bindings_mod);
+        exe.root_module.addImport("utils", utils_mod);
 
         b.installArtifact(exe);
 
