@@ -26,6 +26,7 @@ pub fn build(b: *std.Build) !void {
         "src/sample.zig",
         "src/examples/02001_first.zig",
         "src/examples/02002_draw_point.zig",
+        "src/examples/02004_glsl_from_file.zig",
     };
 
     for (codes) |code| {
