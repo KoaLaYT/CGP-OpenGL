@@ -31,11 +31,15 @@ pub fn build(b: *std.Build) !void {
 
     const codes = [_][]const u8{
         "src/sample.zig",
+        // examples
         "src/examples/02001_first.zig",
         "src/examples/02002_draw_point.zig",
         "src/examples/02004_glsl_from_file.zig",
         "src/examples/02005_draw_triangle.zig",
         "src/examples/02006_simple_animation.zig",
+        // exercises
+        "src/exercises/02001.zig",
+        "src/exercises/02004.zig",
     };
 
     for (codes) |code| {
