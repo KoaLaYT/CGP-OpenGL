@@ -78,6 +78,7 @@ fn createShaderProgram() !gl.uint {
 
     gl.ShaderSource(vertex_shader, 1, &.{vs}, &.{vs.len});
     gl.CompileShader(vertex_shader);
+    checkOpenGLError();
     gl.GetShaderiv(vertex_shader, gl.COMPILE_STATUS, &success);
     if (success == gl.FALSE) {
         gl.GetShaderInfoLog(vertex_shader, info_log_buf.len, null, &info_log_buf);
@@ -90,6 +91,7 @@ fn createShaderProgram() !gl.uint {
     defer gl.DeleteShader(fragment_shader);
     gl.ShaderSource(fragment_shader, 1, &.{fs}, &.{fs.len});
     gl.CompileShader(fragment_shader);
+    checkOpenGLError();
     gl.GetShaderiv(fragment_shader, gl.COMPILE_STATUS, &success);
     if (success == gl.FALSE) {
         gl.GetShaderInfoLog(fragment_shader, info_log_buf.len, null, &info_log_buf);
@@ -104,6 +106,7 @@ fn createShaderProgram() !gl.uint {
     gl.AttachShader(program, vertex_shader);
     gl.AttachShader(program, fragment_shader);
     gl.LinkProgram(program);
+    checkOpenGLError();
     gl.GetProgramiv(program, gl.LINK_STATUS, &success);
     if (success == gl.FALSE) {
         gl.GetProgramInfoLog(program, info_log_buf.len, null, &info_log_buf);
@@ -112,6 +115,20 @@ fn createShaderProgram() !gl.uint {
     }
 
     return program;
+}
+
+inline fn checkOpenGLError() void {
+    const shouldCheck = switch (@import("builtin").mode) {
+        .Debug, .ReleaseSafe => true,
+        else => false,
+    };
+    if (!shouldCheck) return;
+
+    var err = gl.GetError();
+    while (err != gl.NO_ERROR) {
+        log.err("glError: {any}", .{err});
+        err = gl.GetError();
+    }
 }
 
 fn errorCallback(error_code: c_int, description: [*:0]u8) callconv(.C) void {
