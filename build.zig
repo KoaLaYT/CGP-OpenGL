@@ -22,6 +22,8 @@ pub fn build(b: *std.Build) !void {
         // .extensions = &.{ .ARB_clip_control, .NV_scissor_exclusive },
     });
 
+    const zlm_dep = b.dependency("zlm", .{});
+
     const utils_mod = b.addModule("utils", .{
         .root_source_file = b.path("src/utils/utils.zig"),
         .target = target,
@@ -53,6 +55,7 @@ pub fn build(b: *std.Build) !void {
         exe.root_module.addImport("glfw", glfw_mod);
         exe.root_module.addImport("gl", gl_bindings_mod);
         exe.root_module.addImport("utils", utils_mod);
+        exe.root_module.addImport("zlm", zlm_dep.module("zlm"));
 
         b.installArtifact(exe);
 
