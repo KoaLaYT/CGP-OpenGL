@@ -42,6 +42,7 @@ pub fn build(b: *std.Build) !void {
         // exercises
         "src/exercises/02001.zig",
         "src/exercises/02004.zig",
+        "src/exercises/03001.zig",
     };
 
     for (codes) |code| {
